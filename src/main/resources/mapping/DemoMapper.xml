@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wsk.dao.DemoMapper" >
+
+    <select id="queryInfo" resultMap="resultMap">
+        SELECT
+            u.id,u.username,s.* ,sh.*
+        FROM (SELECT DISTINCT gd.sid, gd.uid,gd.weight from `goodscar` gd) as s
+                 LEFT  JOIN userinformation as u ON u.id = s.uid
+                 left  join shopinformation sh on s.sid = sh.id
+    </select>
+
+    <resultMap id="resultMap" type="com.jun.entity.ShoppingRec">
+        <id property="uid" column="id" />
+        <result property="username" column="username" />
+        <result property="phone" column="phone" />
+        <result property="realname" column="realname" />
+        <result column="modified" property="modified" jdbcType="TIMESTAMP" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="level" property="level" jdbcType="INTEGER" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="sort" property="sort" jdbcType="INTEGER" />
+        <result column="display" property="display" jdbcType="INTEGER" />
+        <result column="quantity" property="quantity" jdbcType="INTEGER" />
+        <result column="transaction" property="transaction" jdbcType="INTEGER" />
+        <result column="sales" property="sales" jdbcType="INTEGER" />
+        <result column="uid" property="uid" jdbcType="INTEGER" />
+        <result column="image" property="image" jdbcType="VARCHAR" />
+        <result column="thumbnails" property="thumbnails" jdbcType="VARCHAR" />
+
+        <collection property="goodsWeightsList" column="id" javaType= "ArrayList" ofType= "com.jun.entity.GoodsWeight" select="queryGoodsWeight"/>
+    </resultMap>
+
+    <select id="queryGoodsWeight" resultMap="resultMapWeight">
+        SELECT
+            s.sid,u.username,s.weight
+        FROM (SELECT DISTINCT gd.sid, gd.uid,gd.weight from `goodscar` gd) as s
+                 LEFT  JOIN userinformation as u ON u.id = s.uid
+                 left  join shopinformation sh on s.sid = sh.id
+        where s.uid = #{uid}
+    </select>
+
+    <resultMap id="resultMapWeight" type="com.jun.entity.GoodsWeight">
+        <id property="sid" column="sid" />
+        <result property="name" column="username" />
+        <result property="weight" column="weight" />
+
+    </resultMap>
+
+    <select id="chaxun1" resultMap="chaxunresult">
+        SELECT * FROM shopinformation as sh
+                 WHERE sh.id IN
+        <foreach collection="list1" item="item"  open="(" separator="," close=")">
+            #{item.sid}
+        </foreach>
+    </select>
+
+    <resultMap id="chaxunresult" type="com.wsk.pojo.ShopInformation">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="modified" property="modified" jdbcType="TIMESTAMP" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="level" property="level" jdbcType="INTEGER" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="sort" property="sort" jdbcType="INTEGER" />
+        <result column="display" property="display" jdbcType="INTEGER" />
+        <result column="quantity" property="quantity" jdbcType="INTEGER" />
+        <result column="transaction" property="transaction" jdbcType="INTEGER" />
+        <result column="sales" property="sales" jdbcType="INTEGER" />
+        <result column="uid" property="uid" jdbcType="INTEGER" />
+        <result column="image" property="image" jdbcType="VARCHAR" />
+        <result column="thumbnails" property="thumbnails" jdbcType="VARCHAR" />
+    </resultMap>
+
+</mapper>
